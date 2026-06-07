@@ -23,7 +23,7 @@ let connectedDevices = [];
 let activeStream = false;
 let currentQuality = 240;
 let currentFps = 15;
-let selectedDeviceId = null;  // ✅ Currently selected device for viewing
+let selectedDeviceId = null;
 
 io.on('connection', (socket) => {
   console.log('📱 New connection:', socket.id);
@@ -47,7 +47,6 @@ io.on('connection', (socket) => {
       connectedDevices.push(device);
     }
     
-    // ✅ If no device selected, select first one
     if (!selectedDeviceId) {
       selectedDeviceId = socket.id;
     }
@@ -75,7 +74,6 @@ io.on('connection', (socket) => {
   
   socket.on('stream_frame', (data) => {
     if (data && data.image && activeStream) {
-      // ✅ Only broadcast if this device is the selected one
       if (selectedDeviceId === socket.id) {
         io.emit('frame', {
           image: data.image,
@@ -88,7 +86,6 @@ io.on('connection', (socket) => {
     }
   });
   
-  // ✅ Switch to selected device
   socket.on('select_device', (data) => {
     const deviceId = data.deviceId;
     const device = connectedDevices.find(d => d.id === deviceId);
@@ -110,7 +107,6 @@ io.on('connection', (socket) => {
     console.log('❌ Device disconnected:', socket.id);
     connectedDevices = connectedDevices.filter(d => d.id !== socket.id);
     
-    // ✅ If selected device disconnected, select another
     if (selectedDeviceId === socket.id && connectedDevices.length > 0) {
       selectedDeviceId = connectedDevices[0].id;
       io.emit('selected_device', selectedDeviceId);
@@ -157,7 +153,6 @@ io.on('connection', (socket) => {
         break;
     }
     
-    // ✅ Forward command to selected device only
     if (selectedDeviceId) {
       io.to(selectedDeviceId).emit('command', { command, value });
     }
@@ -171,7 +166,6 @@ io.on('connection', (socket) => {
     });
   });
   
-  // Send initial data
   socket.emit('devices_list', connectedDevices);
   socket.emit('selected_device', selectedDeviceId);
   socket.emit('status_update', {
@@ -231,7 +225,6 @@ app.get('/', (req, res) => {
             .video-placeholder { text-align: center; color: #555; }
             .video-placeholder span { font-size: 48px; }
             
-            /* ✅ Fullscreen Button */
             .fullscreen-btn {
                 position: absolute;
                 bottom: 10px;
@@ -247,14 +240,10 @@ app.get('/', (req, res) => {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                transition: all 0.3s;
                 z-index: 10;
             }
-            .fullscreen-btn:hover {
-                background: #667eea;
-            }
+            .fullscreen-btn:hover { background: #667eea; }
             
-            /* ✅ Fullscreen Mode */
             .video-container.fullscreen {
                 position: fixed;
                 top: 0;
@@ -265,10 +254,6 @@ app.get('/', (req, res) => {
                 margin: 0;
                 border-radius: 0;
                 aspect-ratio: auto;
-            }
-            .video-container.fullscreen .fullscreen-btn {
-                bottom: 20px;
-                right: 20px;
             }
             
             .controls { background: #1a1a1a; border-radius: 16px; padding: 16px; margin-bottom: 20px; border: 1px solid #2a2a2a; }
@@ -291,7 +276,6 @@ app.get('/', (req, res) => {
             .fps-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: #667eea; border-radius: 50%; cursor: pointer; }
             .fps-value { text-align: center; font-size: 12px; color: #888; }
             
-            /* ✅ Device List - Clickable */
             .devices { background: #1a1a1a; border-radius: 16px; padding: 16px; border: 1px solid #2a2a2a; }
             .device-item { 
                 display: flex; 
@@ -302,27 +286,12 @@ app.get('/', (req, res) => {
                 cursor: pointer;
                 transition: all 0.2s;
             }
-            .device-item:hover {
-                background: #252525;
-                padding-left: 8px;
-                border-radius: 8px;
-            }
-            .device-item.active {
-                background: linear-gradient(135deg, #667eea20, #764ba220);
-                border-left: 3px solid #667eea;
-                padding-left: 8px;
-                border-radius: 8px;
-            }
+            .device-item:hover { background: #252525; padding-left: 8px; border-radius: 8px; }
+            .device-item.active { background: linear-gradient(135deg, #667eea20, #764ba220); border-left: 3px solid #667eea; padding-left: 8px; border-radius: 8px; }
             .device-item:last-child { border-bottom: none; }
             .device-name { font-size: 14px; font-weight: 500; }
             .device-status { width: 8px; height: 8px; background: #4CAF50; border-radius: 50%; }
-            .device-badge {
-                font-size: 10px;
-                background: #667eea;
-                padding: 2px 8px;
-                border-radius: 12px;
-                margin-left: 8px;
-            }
+            .device-badge { font-size: 10px; background: #667eea; padding: 2px 8px; border-radius: 12px; margin-left: 8px; }
             .empty-devices { text-align: center; color: #555; padding: 20px; }
         </style>
     </head>
@@ -354,8 +323,7 @@ app.get('/', (req, res) => {
                     <span>📷</span><br>
                     No stream
                 </div>
-                <!-- ✅ Fullscreen Button -->
-                <button class="fullscreen-btn" id="fullscreenBtn" onclick="toggleFullscreen()">⛶</button>
+                <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
             </div>
             
             <div class="controls">
@@ -408,18 +376,14 @@ app.get('/', (req, res) => {
             const selectedDeviceLabel = document.getElementById('selectedDeviceLabel');
             const videoContainer = document.getElementById('videoContainer');
             
-            // ✅ Fullscreen Toggle
-            window.toggleFullscreen = function() {
+            function toggleFullscreen() {
                 if (!document.fullscreenElement) {
-                    videoContainer.requestFullscreen().catch(err => {
-                        console.log('Fullscreen error:', err);
-                    });
+                    videoContainer.requestFullscreen().catch(err => console.log(err));
                 } else {
                     document.exitFullscreen();
                 }
-            };
+            }
             
-            // Listen for fullscreen change
             document.addEventListener('fullscreenchange', () => {
                 if (document.fullscreenElement) {
                     videoContainer.classList.add('fullscreen');
@@ -478,7 +442,6 @@ app.get('/', (req, res) => {
                     selectedDeviceLabel.innerHTML = `Viewing: ${device.name}`;
                 }
                 
-                // Update active highlight
                 document.querySelectorAll('.device-item').forEach(el => {
                     el.classList.remove('active');
                 });
@@ -497,11 +460,76 @@ app.get('/', (req, res) => {
                 }
             });
             
-            // ✅ Select device function
             window.selectDevice = function(deviceId) {
-                console.log('Selecting device:', deviceId);
                 socket.emit('select_device', { deviceId: deviceId });
-                // Reset streaming state when switching device
                 isStreaming = false;
                 video.style.display = 'none';
-                placeholder.style
+                placeholder.style.display = 'block';
+                fpsCountSpan.textContent = '0';
+            };
+            
+            function sendCommand(command, value = null) {
+                if (!selectedDeviceId) return;
+                socket.emit('command', { command, value });
+            }
+            
+            document.getElementById('startBtn').onclick = () => {
+                sendCommand('start');
+                isStreaming = true;
+            };
+            document.getElementById('stopBtn').onclick = () => {
+                sendCommand('stop');
+                isStreaming = false;
+                video.style.display = 'none';
+                placeholder.style.display = 'block';
+                fpsCountSpan.textContent = '0';
+            };
+            document.getElementById('flipBtn').onclick = () => sendCommand('flip');
+            
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const quality = parseInt(btn.dataset.quality);
+                    sendCommand('quality', quality);
+                };
+            });
+            
+            fpsSlider.oninput = () => {
+                const fps = parseInt(fpsSlider.value);
+                fpsLabel.textContent = fps + ' FPS';
+                sendCommand('fps', fps);
+            };
+        </script>
+    </body>
+    </html>
+  `);
+});
+
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    devices: connectedDevices.length,
+    streamActive: activeStream,
+    quality: currentQuality,
+    fps: currentFps,
+    selectedDevice: selectedDeviceId,
+    uptime: process.uptime()
+  });
+});
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, '0.0.0.0', () => {
+  console.log('');
+  console.log('═══════════════════════════════════════════════════');
+  console.log('✅ Ludoo Camera Remote Server Started');
+  console.log('═══════════════════════════════════════════════════');
+  console.log(`🌐 Web Interface: http://localhost:${PORT}`);
+  console.log(`💪 Health Check: http://localhost:${PORT}/health`);
+  console.log('═══════════════════════════════════════════════════');
+  console.log('');
+  console.log('📱 Features: Start/Stop | Flip | 4 Qualities | FPS | Multi-Device | Fullscreen');
+  console.log('');
+  console.log('📡 Waiting for Android device...');
+  console.log('');
+});
