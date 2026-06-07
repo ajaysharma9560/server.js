@@ -115,11 +115,32 @@ body {
     height: 36px;
     border-radius: 50%;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     z-index: 10;
+    transition: all 0.3s;
 }
 
 .fullscreen-btn:hover {
     background: #667eea;
+}
+
+.video-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    margin: 0;
+    border-radius: 0;
+    aspect-ratio: auto;
+}
+
+.video-container.fullscreen .fullscreen-btn {
+    bottom: 20px;
+    right: 20px;
 }
 
 .controls {
@@ -197,6 +218,7 @@ body {
     cursor: pointer;
     font-size: 12px;
     text-align: center;
+    transition: all 0.2s;
 }
 
 .quality-btn.active {
@@ -243,9 +265,10 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
+    padding: 12px 0;
     border-bottom: 1px solid #2a2a2a;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
 .device-item:hover {
@@ -292,7 +315,28 @@ body {
 }
 
 @media (max-width: 768px) {
-    .quality-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .container {
+        padding: 0;
     }
-  }
+    
+    .quality-grid {
+        gap: 6px;
+    }
+    
+    .quality-btn {
+        padding: 8px;
+        font-size: 11px;
+    }
+    
+    .stats {
+        gap: 8px;
+    }
+    
+    .stat-card {
+        padding: 8px;
+    }
+    
+    .stat-value {
+        font-size: 16px;
+    }
+}
