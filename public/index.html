@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Ludoo Camera Remote</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📹 Ludoo Remote</h1>
+            <p id="selectedDeviceLabel">Select a device to view</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-label">STATUS</div>
+                <div class="stat-value" id="serverStatus">● Online</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">DEVICES</div>
+                <div class="stat-value" id="deviceCount">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">FPS</div>
+                <div class="stat-value" id="fpsCount">0</div>
+            </div>
+        </div>
+        
+        <div class="video-container" id="videoContainer">
+            <img id="video" style="display: none;">
+            <div id="placeholder" class="video-placeholder">
+                <span>📷</span><br>
+                No stream
+            </div>
+            <button class="fullscreen-btn" id="fullscreenBtn">⛶</button>
+        </div>
+        
+        <div class="controls">
+            <div class="section-title">🎮 CONTROLS</div>
+            <div class="button-group">
+                <button class="btn btn-start" id="startBtn">▶ START</button>
+                <button class="btn btn-stop" id="stopBtn">⏹ STOP</button>
+                <button class="btn btn-flip" id="flipBtn">🔄 FLIP</button>
+            </div>
+            
+            <div class="section-title">📐 QUALITY</div>
+            <div class="quality-grid">
+                <button class="quality-btn" data-quality="120">120p</button>
+                <button class="quality-btn" data-quality="140">140p</button>
+                <button class="quality-btn active" data-quality="240">240p</button>
+                <button class="quality-btn" data-quality="360">360p</button>
+            </div>
+            
+            <div class="fps-control">
+                <div class="section-title">⚡ FPS</div>
+                <input type="range" id="fpsSlider" min="5" max="30" value="15" step="1" class="fps-slider">
+                <div class="fps-value" id="fpsLabel">15 FPS (Recommended)</div>
+            </div>
+        </div>
+        
+        <div class="devices">
+            <div class="section-title">📱 CONNECTED DEVICES (Click to view)</div>
+            <div id="devicesList">
+                <div class="empty-devices">No devices connected</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <script src="/script.js"></script>
+</body>
+</html>
