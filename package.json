@@ -1,7 +1,7 @@
 {
   "name": "ludoo-camera-remote",
   "version": "1.0.0",
-  "description": "Ludoo Camera Remote Server - Multi-device camera streaming with fullscreen and device management",
+  "description": "Ludoo Camera Remote Server - Multi-device camera streaming",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -12,8 +12,7 @@
     "streaming",
     "socket.io",
     "remote",
-    "android",
-    "multi-device"
+    "android"
   ],
   "author": "Ludoo",
   "license": "MIT",
