@@ -5,6 +5,7 @@ let isStreaming = false;
 let selectedDeviceId = null;
 let devicesData = [];
 
+// DOM Elements
 const video = document.getElementById('video');
 const placeholder = document.getElementById('placeholder');
 const deviceCountSpan = document.getElementById('deviceCount');
@@ -16,10 +17,10 @@ const selectedDeviceLabel = document.getElementById('selectedDeviceLabel');
 const videoContainer = document.getElementById('videoContainer');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-// Fullscreen
+// ========== FULLSCREEN ==========
 fullscreenBtn.addEventListener('click', () => {
     if (!document.fullscreenElement) {
-        videoContainer.requestFullscreen();
+        videoContainer.requestFullscreen().catch(err => console.log(err));
     } else {
         document.exitFullscreen();
     }
@@ -33,8 +34,10 @@ document.addEventListener('fullscreenchange', () => {
     }
 });
 
+// ========== SOCKET EVENTS ==========
+
 socket.on('connect', () => {
-    console.log('Connected to server');
+    console.log('✅ Connected to server');
 });
 
 socket.on('frame', (data) => {
@@ -96,13 +99,18 @@ socket.on('status_update', (status) => {
     if (status.stream) {
         serverStatus.innerHTML = '● LIVE';
         serverStatus.style.color = '#f44336';
+        serverStatus.classList.add('streaming');
     } else {
         serverStatus.innerHTML = '● Online';
         serverStatus.style.color = '#4CAF50';
+        serverStatus.classList.remove('streaming');
     }
 });
 
+// ========== FUNCTIONS ==========
+
 window.selectDevice = function(deviceId) {
+    console.log('Selecting device:', deviceId);
     socket.emit('select_device', { deviceId: deviceId });
     isStreaming = false;
     video.style.display = 'none';
@@ -111,9 +119,15 @@ window.selectDevice = function(deviceId) {
 };
 
 function sendCommand(command, value = null) {
-    if (!selectedDeviceId) return;
+    if (!selectedDeviceId) {
+        console.log('No device selected');
+        return;
+    }
     socket.emit('command', { command, value });
+    console.log('Command sent:', command, value);
 }
+
+// ========== BUTTON EVENTS ==========
 
 document.getElementById('startBtn').onclick = () => {
     sendCommand('start');
@@ -130,6 +144,7 @@ document.getElementById('stopBtn').onclick = () => {
 
 document.getElementById('flipBtn').onclick = () => sendCommand('flip');
 
+// Quality buttons
 document.querySelectorAll('.quality-btn').forEach(btn => {
     btn.onclick = () => {
         document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
@@ -139,8 +154,11 @@ document.querySelectorAll('.quality-btn').forEach(btn => {
     };
 });
 
+// FPS Slider
 fpsSlider.oninput = () => {
     const fps = parseInt(fpsSlider.value);
     fpsLabel.textContent = fps + ' FPS';
     sendCommand('fps', fps);
 };
+
+console.log('Page loaded, waiting for devices...');
